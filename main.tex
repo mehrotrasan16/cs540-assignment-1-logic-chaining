@@ -1,18 +1,46 @@
-\documentclass{article}
+\documentclass[a4paper]{article}
+\usepackage[a4paper,top=1.5cm]{geometry}
+% \usepackage[a4paper,top=2cm,bottom=2.5cm,left=5cm,right=1.5cm,marginparwidth=1.75cm]{geometry}
 \usepackage[utf8]{inputenc}
 \usepackage{logicproof}
 
-\title{CS540 - Artificial Intelligence: Assignment-1}
-\author{sanketmehrotra101 }
-\date{6th February 2021}
+%% Language and font encodings
+\usepackage[english]{babel}
+\usepackage[utf8x]{inputenc}
+\usepackage{listings}
+
+%% Sets page size and margins
+
+\usepackage{float}
+%% Useful packages
+\usepackage{amsmath}
+\usepackage[colorinlistoftodos]{todonotes}
+\usepackage[colorlinks=true, allcolors=blue]{hyperref}
+\usepackage{listings}
+\usepackage{url}
+\usepackage{graphicx}
+\graphicspath{ {./images/} }
+% \DeclareGraphicsExtensions{.pdf,.jpg,.png}
+
+%% defined colors
+\definecolor{Blue}{rgb}{0,0,0.5}
+\definecolor{Green}{rgb}{0,0.75,0.0}
+\definecolor{LightGray}{rgb}{0.6,0.6,0.6}
+\definecolor{DarkGray}{rgb}{0.3,0.3,0.3}
+
+
+\title{CS540 - Artificial Intelligence: Assignment-1 \\Logic: Forward and Backward Chaining}
+% \subtitle{Logic: Forward and Backward Chaining}
+\author{Sanket Mehrotra (EID: 832449213) }
+\date{February 6, 2021}
 
 \begin{document}
 
 \maketitle
 
 \section{Question:}
-\parindent
 
+\parindent
 Given:
 
 $$\lnot(P \to S)$$
@@ -22,7 +50,7 @@ $$Z \to (\lnot A \land B)$$
 $$X \to (\lnot B \land Z)$$
 $$(\lnot Z \land \lnot X ) \to Q$$
 
-Prove: Q 
+Prove: $Q$ 
 
 
 Using : \begin{enumerate}
@@ -30,20 +58,138 @@ Using : \begin{enumerate}
     \item Backward Chaining
 \end{enumerate}
 
+\newpage
 \section{Forward Chaining}
+
+In forward chaining, we try to use a data driven, Modus Ponens related approach.\\
+We first simplify the inferences using logical equivalence into CNF.
+
 
 {
 \setlength\subproofhorizspace{2em}
 \begin{logicproof}{1}
-    \forall x \, (P(x) \to Q(x)) & premise \\
-    \forall x \, P(x) & premise \\\hspace*{-30pt}
     \begin{subproof}
-        \llap{$x_0\quad$} P(x_0) \to Q(x_0) & $\forall x \, \mathrm{e}$ 1 \\
-        P(x_0) & $\forall x \, \mathrm{e}$ 2 \\
-        Q(x_0) & $\to \mathrm{e}$ 3, 4
+        \lnot(P \to S)  & \\
+        \equiv \lnot(\lnot P \lor S) & Implication \\
+        \equiv (P \land \lnot S) & DeMorgans
     \end{subproof}
-    \forall x \, Q(x) & $\forall x \, \mathrm{i}$ 3--5
+    \begin{subproof}
+        $$(P \to A)$$ & \\
+        \equiv ( \lnot P \lor A ) & Implication
+    \end{subproof}
+    \begin{subproof}
+        (\lnot B \to S) & \\
+        \equiv (B \lor S) & Implication
+    \end{subproof}
+    \begin{subproof}
+        $$Z \to (\lnot A \land B)$$ & \\
+        \equiv (\lnot Z \lor \lnot A ) \land ( \lnot Z \lor B ) & Implication
+    \end{subproof}
+    \begin{subproof}
+        $$X \to (\lnot B \land Z)$$ & \\
+        \equiv (\lnot X \lor \lnot B) \land (\lnot X \lor Z) & Implication
+    \end{subproof}
+    \begin{subproof}
+        $$(\lnot Z \land \lnot X ) \to Q$$ & \\
+        \equiv \lnot Q \to \lnot(\lnot Z \land\lnot X) & Implication\\
+        \equiv \lnot Q \to ( Z \lor X) & DeMorgans \\
+        \equiv Q \lor Z \lor X & 
+    \end{subproof}
+    \noindent\rule{4cm}{0.4pt} \\
+    P & from 3 \\
+    \lnot S & from 3 (Horn Clause Structure)\\
+    \lnot P, A & from 5 \\
+    B, S & from 7 \\
+    \lnot Z, \lnot A & from 9 \\
+    \lnot Z, B & from 9 \\
+    \lnot X , \lnot B & from 11 \\
+    \lnot X, Z & from 11 \\
+    Q,Z,X & from 15 \\
+    \noindent\rule{4cm}{0.4pt} \\
+    \lnot P, \lnot Z & from 19 and 21\\
+    B & from 18 and 20 \\
+    P, B & from 17 and 28 \\
+    P, \lnot X & from 23 and 29 \\
+    \lnot Z , \lnot X & from 27 and 30 \\
+    Q & from 25 and 31
+    
 \end{logicproof}
 }
 
+\newpage
+\section{Backward Chaining}
+{
+In Backward Chaining, we use a goal driven approach to try to force a fallacy via a proof by contradiction.
+
+In our case we assume that what we are trying to prove: $Q$ is False; i.e. $\lnot Q$ is True.
+
+{
+\setlength\subproofhorizspace{2em}
+\begin{logicproof}{1}
+    \begin{subproof}
+        \lnot(P \to S)  & \\
+        \equiv \lnot(\lnot P \lor S) & Implication \\
+        \equiv (P \land \lnot S) & DeMorgans
+    \end{subproof}
+    \begin{subproof}
+        $$(P \to A)$$ & \\
+        \equiv ( \lnot P \lor A ) & Implication
+    \end{subproof}
+    \begin{subproof}
+        (\lnot B \to S) & \\
+        \equiv (B \lor S) & Implication
+    \end{subproof}
+    \begin{subproof}
+        $$Z \to (\lnot A \land B)$$ & \\
+        \equiv (\lnot Z \lor \lnot A ) \land ( \lnot Z \lor B ) & Implication
+    \end{subproof}
+    \begin{subproof}
+        $$X \to (\lnot B \land Z)$$ & \\
+        \equiv (\lnot X \lor \lnot B) \land (\lnot X \lor Z) & Implication
+    \end{subproof}
+    \begin{subproof}
+        $$(\lnot Z \land \lnot X ) \to Q$$ & \\
+        \equiv \lnot Q \to \lnot(\lnot Z \land\lnot X) & Implication\\
+        \equiv \lnot Q \to ( Z \lor X) & DeMorgans \\
+        \equiv Q \lor Z \lor X & 
+    \end{subproof}
+    % P, \lnot S & from 3 \\
+    \noindent\rule{4cm}{0.4pt} \\
+    P & from 3 \\
+    \lnot S & from 3 (Horn Clause Structure)\\
+    \lnot P, A & from 5 \\
+    B, S & from 7 \\
+    \lnot Z, \lnot A & from 9 \\
+    \lnot Z, B & from 9 \\
+    \lnot X , \lnot B & from 11 \\
+    \lnot X, Z & from 11 \\
+    Q,Z,X & from 15 \\
+    \noindent\rule{4cm}{0.4pt} \\
+    $\lnot Q$ & from assumption\\
+    Z, X & from 25 and 27 \\
+    B & from 18 and 20 \\
+    \lnot X & from 23 and 29 \\
+    Z & from 28 and 30 \\
+    \lnot Z & from 22 and 29 \\
+    % \lnot B & from 30 and 23 \\
+    **CONTRADICTION** & 31 and 32
+\end{logicproof}
+}
+
+}
+
 \end{document}
+
+% {
+% \setlength\subproofhorizspace{2em}
+% \begin{logicproof}{1}
+%     \lnot(P \to S) \equiv \lnot(\lnot P \lor S) \equiv (P \land \lnot S) & Implication Law, DeMorgans Law \\
+%     $$(P \to A)$$ \equiv (\lnot P \lor A ) & Implication \\\hspace*{-30pt}
+%     \begin{subproof}
+%         \llap{$x_0\quad$} P(x_0) \to Q(x_0) & $\forall x \, \mathrm{e}$ 1 \\
+%         P(x_0) & $\forall x \, \mathrm{e}$ 2 \\
+%         Q(x_0) & $\to \mathrm{e}$ 3, 4
+%     \end{subproof}
+%     \forall x \, Q(x) & $\forall x \, \mathrm{i}$ 3--5
+% \end{logicproof}
+% }
